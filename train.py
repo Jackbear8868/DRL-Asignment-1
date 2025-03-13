@@ -172,7 +172,7 @@ def train_dqn(episodes: int = 2000):
     :return: 已訓練好的 agent
     """
     # 環境初始化，fuel_limit 可以開大一點，不然太容易沒油結束
-    env = SimpleTaxiEnv(fuel_limit=200)  
+    env = TaxiEnv(fuel_limit=5000)  
 
     # state_size: 從env.get_state()可知每次回傳 16 個特徵
     state_size = len(env.get_state())
@@ -232,7 +232,7 @@ def test_dqn(agent: DQNAgent, episodes: int = 10):
     """
     使用訓練好的 agent 測試環境
     """
-    env = SimpleTaxiEnv(fuel_limit=200) 
+    env = TaxiEnv(fuel_limit=5000) 
     total_scores = []
     for e in range(episodes):
         state, _ = env.reset()
@@ -253,7 +253,7 @@ def test_dqn(agent: DQNAgent, episodes: int = 10):
 # -----------------------------
 if __name__ == "__main__":
     # 進行訓練
-    trained_agent = train_dqn(episodes=2000)
+    trained_agent = train_dqn(episodes=100)
 
     # 若要測試：可以讀取剛剛的模型並進行測試
     # 1) 先新建同樣架構的 agent
