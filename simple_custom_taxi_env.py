@@ -31,22 +31,6 @@ class SimpleTaxiEnv():
 
     def reset(self):
         """Reset the environment, ensuring Taxi, passenger, and destination are not overlapping obstacles"""
-
-        self.grid_size = np.random.randint(5,10)
-        self.stations = [(0, 0), (0, self.grid_size - 1), (self.grid_size - 1, 0), (self.grid_size - 1, self.grid_size - 1)]
-        
-        all_positions = [(x, y) for x in range(self.grid_size) for y in range(self.grid_size)]
-        for station in self.stations:
-            all_positions.remove(station)
-        
-        self.taxi_pos = random.choice(all_positions)
-        all_positions.remove(self.taxi_pos)
-
-        max_obstacles = max(0, self.grid_size**2 - 5)  # Ensure at least 1 obstacle
-        num_obstacles = np.random.randint(1, min(max_obstacles, len(all_positions)))  # Random number of obstacles
-        self.obstacles = set(random.sample(all_positions, num_obstacles))
-
-
         self.current_fuel = self.fuel_limit
         self.passenger_picked_up = False
         
@@ -128,29 +112,23 @@ class SimpleTaxiEnv():
         obstacle_east  = int(taxi_col == self.grid_size - 1 or (taxi_row, taxi_col+1) in self.obstacles)
         obstacle_west  = int(taxi_col == 0 or (taxi_row , taxi_col-1) in self.obstacles)
 
-        # 0 down, 1 up, 2 right, 3 left
-        # 0 north, 1 down, 2 east, 3 west, 4 middle
-
-        passenger_loc_north = 0 if (taxi_row - 1, taxi_col) == self.passenger_loc else -1
-        passenger_loc_south = 1 if (taxi_row + 1, taxi_col) == self.passenger_loc else -1
-        passenger_loc_east  = 2 if (taxi_row, taxi_col + 1) == self.passenger_loc else -1
-        passenger_loc_west  = 3 if (taxi_row, taxi_col + 1) == self.passenger_loc else -1
-        passenger_loc_middle  = 4 if (taxi_row, taxi_col + 1) == self.passenger_loc else -1
-
-        passenger_look = max(passenger_loc_north,passenger_loc_south,passenger_loc_east,passenger_loc_west,passenger_loc_middle)
+        passenger_loc_north = int((taxi_row - 1, taxi_col) == self.passenger_loc)
+        passenger_loc_south = int((taxi_row + 1, taxi_col) == self.passenger_loc)
+        passenger_loc_east  = int((taxi_row, taxi_col + 1) == self.passenger_loc)
+        passenger_loc_west  = int((taxi_row, taxi_col - 1) == self.passenger_loc)
+        passenger_loc_middle  = int( (taxi_row, taxi_col) == self.passenger_loc)
+        passenger_look = passenger_loc_north or passenger_loc_south or passenger_loc_east or passenger_loc_west or passenger_loc_middle
        
-        destination_loc_north = 0 if (taxi_row - 1, taxi_col) == self.destination else -1
-        destination_loc_south = 1 if (taxi_row + 1, taxi_col) == self.destination else -1
-        destination_loc_east  = 2 if (taxi_row, taxi_col + 1) == self.destination else -1
-        destination_loc_west  = 3 if (taxi_row, taxi_col + 1) == self.destination else -1
-        destination_loc_middle  = 4 if (taxi_row, taxi_col + 1) == self.destination else -1
+        destination_loc_north = int( (taxi_row - 1, taxi_col) == self.destination)
+        destination_loc_south = int( (taxi_row + 1, taxi_col) == self.destination)
+        destination_loc_east  = int( (taxi_row, taxi_col + 1) == self.destination)
+        destination_loc_west  = int( (taxi_row, taxi_col - 1) == self.destination)
+        destination_loc_middle  = int( (taxi_row, taxi_col) == self.destination)
+        destination_look = destination_loc_north or destination_loc_south or destination_loc_east or destination_loc_west or destination_loc_middle
 
-        destination_look = max(destination_loc_north,destination_loc_south,destination_loc_east,destination_loc_west,destination_loc_middle)
         
         state = (taxi_row, taxi_col, self.stations[0][0],self.stations[0][1] ,self.stations[1][0],self.stations[1][1],self.stations[2][0],self.stations[2][1],self.stations[3][0],self.stations[3][1],obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look)
         return state
-    
-    
     def render_env(self, taxi_pos,   action=None, step=None, fuel=None):
         clear_output(wait=True)
 

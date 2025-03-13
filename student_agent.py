@@ -1,18 +1,38 @@
-# Remember to adjust your student ID in meta.xml
+import torch
+import torch.nn as nn
 import numpy as np
-import pickle
 import random
-import gym
+
+# Import the QNetwork definition from your training script
+from student_agent import QNetwork  # Ensure QNetwork is in the same directory
+
+# Load the trained model once at the start
+MODEL_PATH = "dqn_taxi.pth"
+STATE_SIZE = 16  # Ensure this matches your environment
+ACTION_SIZE = 6
+
+# Initialize device (use GPU if available)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Load the trained model
+model = QNetwork(STATE_SIZE, ACTION_SIZE).to(device)
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+model.eval()  # Set to evaluation mode (no gradient updates)
 
 def get_action(obs):
+    """ Uses trained DQN model to choose an action. """
     
-    # TODO: Train your own agent
-    # HINT: If you're using a Q-table, consider designing a custom key based on `obs` to store useful information.
-    # NOTE: Keep in mind that your Q-table may not cover all possible states in the testing environment.
-    #       To prevent crashes, implement a fallback strategy for missing keys. 
-    #       Otherwise, even if your agent performs well in training, it may fail during testing.
-    print(obs)
+    # Convert observation to tensor
+    if not isinstance(obs, np.ndarray):
+        obs = np.array(obs)
+    
+    state_tensor = torch.FloatTensor(obs).unsqueeze(0).to(device)  # Add batch dimension
+    
+    # Get Q-values from the model
+    with torch.no_grad():
+        q_values = model(state_tensor)  # Output shape: [1, ACTION_SIZE]
 
-    return random.choice([0, 1, 2, 3, 4, 5]) # Choose a random action
-    # You can submit this random agent to evaluate the performance of a purely random strategy.
+    # Choose the action with the highest Q-value
+    action = torch.argmax(q_values, dim=1).item()
 
+    return action  # Return the best action
