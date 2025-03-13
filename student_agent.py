@@ -4,7 +4,7 @@ import pickle
 import random
 import gym
 
-with open("trained_q_table.pkl", "rb") as f:
+with open("q_table.pkl", "rb") as f:
     q_table = pickle.load(f)
 
 def get_state_key(state):
