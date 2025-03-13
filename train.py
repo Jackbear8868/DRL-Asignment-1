@@ -189,7 +189,7 @@ def train_dqn(episodes: int = 2000):
         max_memory_size=10000,
         epsilon_start=1.0,
         epsilon_end=0.01,
-        epsilon_decay=0.995,
+        epsilon_decay=0.9999,
         update_target_freq=1000
     )
 
