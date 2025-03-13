@@ -4,7 +4,7 @@ import numpy as np
 import random
 
 # Import the QNetwork definition from your training script
-from train import QNetwork  # Ensure QNetwork is in the same directory
+from train_DQN_4Layer import QNetwork  # Ensure QNetwork is in the same directory
 
 # Load the trained model once at the start
 MODEL_PATH = "dqn_taxi.pth"
