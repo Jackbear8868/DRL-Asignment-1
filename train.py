@@ -175,7 +175,7 @@ def train_dqn(episodes: int = 2000):
     env = TaxiEnv(fuel_limit=5000)  
 
     # state_size: 從env.get_state()可知每次回傳 16 個特徵
-    state_size = len(env.get_state())
+    state_size = 16
     action_size = 6  # 共有 6 種動作: 下、上、右、左、PICKUP、DROPOFF
 
     # 建立 agent
@@ -213,7 +213,7 @@ def train_dqn(episodes: int = 2000):
             step_count += 1
         
         scores.append(total_reward)
-
+        print(e, agent.epsilon, total_reward)
         # 每隔若干回合印出進度
         if (e + 1) % 100 == 0:
             avg_score = np.mean(scores[-100:])
@@ -253,7 +253,7 @@ def test_dqn(agent: DQNAgent, episodes: int = 10):
 # -----------------------------
 if __name__ == "__main__":
     # 進行訓練
-    trained_agent = train_dqn(episodes=100)
+    trained_agent = train_dqn(episodes=50)
 
     # 若要測試：可以讀取剛剛的模型並進行測試
     # 1) 先新建同樣架構的 agent
