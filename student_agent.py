@@ -8,7 +8,7 @@ from train_DQN import QNetwork  # Ensure QNetwork is in the same directory
 
 # Load the trained model once at the start
 MODEL_PATH = "./dqn_taxi.pth"
-STATE_SIZE = 16  # Ensure this matches your environment
+STATE_SIZE = 21  # Ensure this matches your environment
 ACTION_SIZE = 6
 
 # Initialize device (use GPU if available)
@@ -62,7 +62,6 @@ def get_action(obs):
         passenger_pick = 0
         passenger_row = obs[0]
         passenger_col = obs[1]
-
 
     return action  # Return the best action
 
