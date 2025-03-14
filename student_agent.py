@@ -7,7 +7,7 @@ import random
 from train_DQN import QNetwork  # Ensure QNetwork is in the same directory
 
 # Load the trained model once at the start
-MODEL_PATH = "./DQN-3layer/dqn_taxi-2509.pth"
+MODEL_PATH = "dqn_taxi.pth"
 STATE_SIZE = 16  # Ensure this matches your environment
 ACTION_SIZE = 6
 

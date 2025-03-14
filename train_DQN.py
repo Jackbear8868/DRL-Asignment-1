@@ -175,7 +175,7 @@ def train_dqn(episodes: int = 2000):
     env = TaxiEnv(fuel_limit=5000)  
 
     # state_size: 從env.get_state()可知每次回傳 16 個特徵
-    state_size = 16 + 5
+    state_size = 16
     action_size = 6  # 共有 6 種動作: 下、上、右、左、PICKUP、DROPOFF
 
     # 建立 agent
@@ -189,7 +189,7 @@ def train_dqn(episodes: int = 2000):
         max_memory_size=10000,
         epsilon_start=1.0,
         epsilon_end=0.01,
-        epsilon_decay=0.99,
+        epsilon_decay=0.99999,
         update_target_freq=1000
     )
 
@@ -200,41 +200,11 @@ def train_dqn(episodes: int = 2000):
         done = False
         total_reward = 0
         step_count = 0
-        passenger_pick = 0
-        passenger_row = -1
-        passenger_col = -1
-        destination_row = -1
-        destination_col = -1
-
-        state = state + (passenger_row, passenger_col, destination_row, destination_col, passenger_pick)
 
         while not done:
             action = agent.get_action(state, test_mode=False)
             next_state, reward, done, _ = env.step(action)
 
-            # state = (taxi_row, taxi_col, self.stations[0][0],self.stations[0][1] ,self.stations[1][0],self.stations[1][1],self.stations[2][0],self.stations[2][1],self.stations[3][0],self.stations[3][1],obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look)
-            
-            if passenger_row == -1:
-                if (state[0], state[1]) in [(state[2],state[3]),(state[4],state[5]),(state[6],state[7]),(state[8],state[9])] and state[14]:
-                    passenger_row = state[0]
-                    passenger_col = state[1]
-            
-            if destination_row == -1:
-                if (state[0], state[1]) in [(state[2],state[3]),(state[4],state[5]),(state[6],state[7]),(state[8],state[9])] and state[15]:
-                    destination_row = state[0]
-                    destination_col = state[1]
-
-            if state[0] == passenger_row and state[1] == passenger_col:
-                if action == 4:
-                    passenger_pick = 1
-
-            if action == 5 and (state[0] != destination_row or state[1] != destination_col):
-                passenger_pick = 0
-                passenger_row = state[0]
-                passenger_col = state[1]
-
-            next_state = next_state + (passenger_row, passenger_col, destination_row, destination_col, passenger_pick)
-            
             agent.remember(state, action, reward, next_state, done)
             agent.train_step_update()
 
@@ -283,16 +253,16 @@ def test_dqn(agent: DQNAgent, episodes: int = 10):
 # -----------------------------
 if __name__ == "__main__":
     # 進行訓練
-    # trained_agent = train_dqn(episodes=50)
+    # trained_agent = train_dqn(episodes=20)
 
     # 若要測試：可以讀取剛剛的模型並進行測試
     # 1) 先新建同樣架構的 agent
-    test_agent = DQNAgent(state_size=21, action_size=6)  # ★改成 21
+    test_agent = DQNAgent(state_size=16, action_size=6)
     # 2) 載入模型權重
     test_agent.q_network.load_state_dict(torch.load("dqn_taxi.pth"))
     test_agent.target_network.load_state_dict(test_agent.q_network.state_dict())
     # 3) 執行測試
-    test_dqn(test_agent, episodes=50)
+    test_dqn(test_agent, episodes=100)
 
     # 備註：若要串接原先的 run_agent 函式 (例如 run_agent("student_agent.py", env_config)),
     # 需要在 get_action() 或主檔案裡加入呼叫此 test_agent 的邏輯，
