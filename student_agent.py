@@ -36,3 +36,4 @@ def get_action(obs):
     action = torch.argmax(q_values, dim=1).item()
 
     return action  # Return the best action
+
